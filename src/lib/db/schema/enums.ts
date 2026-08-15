@@ -64,12 +64,21 @@ export const consentPolicyTypeEnum = pgEnum('consent_policy_type', [
   'marketing',
 ]);
 
+export const territoryKindEnum = pgEnum('territory_kind', [
+  'global',
+  'country',
+  'region',
+  'subdivision',
+  'metro',
+]);
+
 export type PlatformRole = (typeof platformRoleEnum.enumValues)[number];
 export type UserStatus = (typeof userStatusEnum.enumValues)[number];
 export type OrgRole = (typeof orgRoleEnum.enumValues)[number];
 export type OrgStatus = (typeof orgStatusEnum.enumValues)[number];
 export type FileBucket = (typeof fileBucketEnum.enumValues)[number];
 export type FileVisibility = (typeof fileVisibilityEnum.enumValues)[number];
+export type TerritoryKind = (typeof territoryKindEnum.enumValues)[number];
 
 /**
  * Ranking used for "admin or above" style checks.

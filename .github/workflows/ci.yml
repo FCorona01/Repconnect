@@ -50,6 +50,18 @@ jobs:
       - name: Apply migrations
         run: pnpm db:migrate
 
+      # The seed SQL is generated from src/lib/taxonomy/seed/*.ts. If someone
+      # edits the source without regenerating (or edits the generated SQL by
+      # hand), the two silently disagree about the taxonomy. Fail instead.
+      - name: Taxonomy seed is in sync with its source
+        run: |
+          pnpm db:generate-seed
+          if ! git diff --quiet -- supabase/migrations/0008_taxonomy_seed.sql; then
+            echo "::error::0008_taxonomy_seed.sql is stale. Run 'pnpm db:generate-seed' and commit the result."
+            git diff -- supabase/migrations/0008_taxonomy_seed.sql
+            exit 1
+          fi
+
       - name: Typecheck
         run: pnpm typecheck
 
