@@ -1,0 +1,45 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink-50: oklch(0.985 0.002 260);
+  --color-ink-100: oklch(0.955 0.004 260);
+  --color-ink-300: oklch(0.78 0.012 260);
+  --color-ink-500: oklch(0.58 0.02 260);
+  --color-ink-700: oklch(0.38 0.025 260);
+  --color-ink-900: oklch(0.21 0.03 260);
+  --color-ink-950: oklch(0.14 0.03 260);
+
+  --color-brand-500: oklch(0.62 0.16 250);
+  --color-brand-600: oklch(0.54 0.17 250);
+}
+
+:root {
+  --background: var(--color-ink-50);
+  --foreground: var(--color-ink-950);
+  --surface: white;
+  --border: var(--color-ink-100);
+  --muted: var(--color-ink-500);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--color-ink-950);
+    --foreground: var(--color-ink-50);
+    --surface: oklch(0.19 0.03 260);
+    --border: oklch(0.28 0.03 260);
+    --muted: var(--color-ink-300);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Visible focus for keyboard users. Never remove this without a replacement. */
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}

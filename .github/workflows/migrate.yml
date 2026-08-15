@@ -1,0 +1,62 @@
+name: Apply migrations to Supabase
+
+# Manually triggered. This is how schema changes reach the real database
+# without any credential ever being pasted into a chat, a file, or a commit.
+#
+# The connection string lives in GitHub's encrypted secrets, is injected at run
+# time, and is masked in the logs. Nobody — including whoever wrote the
+# migrations — needs to see it.
+#
+# Setup: Repository → Settings → Secrets and variables → Actions → New secret
+#   Name:  SUPABASE_DIRECT_DATABASE_URL
+#   Value: the "Direct connection" string from
+#          Supabase → Project Settings → Database
+#
+# Use the DIRECT connection (port 5432), not the transaction pooler (6543):
+# migrations run session-level statements that a pooler cannot carry.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "apply" to confirm running migrations'
+        required: true
+        default: ''
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check confirmation
+        if: inputs.confirm != 'apply'
+        run: |
+          echo "::error::Confirmation not given. Re-run and type 'apply'."
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Apply migrations
+        env:
+          DIRECT_DATABASE_URL: ${{ secrets.SUPABASE_DIRECT_DATABASE_URL }}
+        run: |
+          if [ -z "$DIRECT_DATABASE_URL" ]; then
+            echo "::error::Secret SUPABASE_DIRECT_DATABASE_URL is not set."
+            exit 1
+          fi
+          pnpm db:migrate
+
+      - name: Verify security invariants on the live database
+        env:
+          DIRECT_DATABASE_URL: ${{ secrets.SUPABASE_DIRECT_DATABASE_URL }}
+        run: pnpm exec tsx scripts/verify-security.ts

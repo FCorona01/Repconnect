@@ -1,0 +1,30 @@
+# Local development database.
+#
+# This is a plain PostgreSQL 16 instance that mirrors the extensions and roles
+# our Supabase project uses, so migrations and Row Level Security behave
+# identically locally and in production.
+#
+#   pnpm db:up     start it
+#   pnpm db:down   stop it and delete all data
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: repconnect-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: repconnect
+    ports:
+      - "54322:5432"
+    volumes:
+      - repconnect-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d repconnect"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  repconnect-db-data:
