@@ -21,8 +21,8 @@ That is deliberate — the plan is being agreed before any code is committed.
 | [`docs/04-services.md`](docs/04-services.md) | Every external account, and exactly what you must do. |
 | [`docs/05-monetization.md`](docs/05-monetization.md) | How RepConnect makes money and what that means to build. |
 | [`docs/06-roadmap.md`](docs/06-roadmap.md) | Build order, phase by phase, with exit criteria. |
+| [`docs/07-cold-start.md`](docs/07-cold-start.md) | How we get the first users when neither side exists yet. |
 
 ## Repository
 
-`github.com/FCorona01/Reconnect` — note the repository name is currently
-"Reconnect", not "RepConnect". See the open question in the executive summary.
+`github.com/FCorona01/RepConnect` (rename from `Reconnect` pending).

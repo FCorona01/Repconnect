@@ -161,22 +161,39 @@ Timeline assumes focused, continuous work. Detail and exit criteria for each:
 
 ---
 
-## 8. Three things I need you to decide
+## 8. Decisions made
 
-These genuinely change what I build. I cannot pick for you.
+| Question | Answer | Consequence |
+| --- | --- | --- |
+| Repository name | Rename `Reconnect` → `RepConnect` | You do this in GitHub Settings; the old URL auto-redirects |
+| Domain | Not owned yet | I flag it at week 3; Cloudflare Registrar, ~$12/yr |
+| Existing relationships on either side | **None yet** | Triggered a dedicated cold-start strategy — see below |
 
-**A. The repository name.** It is `Reconnect`. Should it be `RepConnect`? Renaming
-now costs thirty seconds; renaming in six months breaks links and CI.
+**The cold start is now the biggest risk to this project, and it is not a technical
+one.** Starting with neither supply nor demand means the product must be useful to
+each side *even when the other side is empty*, or the first cohort of users leaves
+and does not come back. That has direct architectural consequences, which are now
+written into Phases 2–4.
 
-**B. Do you already own a domain?** If yes, tell me which. If no, I will suggest
-options. This affects email deliverability setup, which has a multi-day DNS
-propagation lead time and so needs starting earlier than people expect.
+The three that matter most:
 
-**C. Who is your first side?** Marketplaces are built by solving the chicken-and-egg
-problem, and the answer changes the build order. Do you already have relationships
-with **businesses** who would post opportunities, or with **sales reps** who would
-create profiles? Whichever you have, we build that side's experience to a higher
-polish first and seed the other side manually.
+1. **Single-player mode.** A rep's public profile must be a shareable professional
+   credential worth having even with zero businesses on the platform. A business's
+   opportunity page must be shareable to their own network. Both sides then bring
+   their own traffic, which seeds the marketplace from outside.
+2. **No screen ever shows an empty marketplace.** Zero-result searches return
+   adjacent matches plus an email alert signup. Captured intent is what lets you
+   re-engage users once supply arrives.
+3. **Go absurdly narrow.** One industry, one metro area. A hundred hand-recruited
+   reps in a single vertical produce a working market; ten thousand scattered
+   signups do not.
+
+Full strategy, sequencing, and the metrics that prove it is working:
+[`07-cold-start.md`](07-cold-start.md).
+
+**One decision still open, needed within ~3 weeks (not today):** which industry and
+which metro area is the beachhead? Phases 0 and 1 are vertical-agnostic
+infrastructure, so this does not block starting.
 
 ---
 
