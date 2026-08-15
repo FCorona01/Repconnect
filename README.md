@@ -5,19 +5,22 @@ fractional sales professionals, contract salespeople, and commission-based sales
 
 ## Current status
 
-**Phase 0 complete: foundations, identity, and access control.**
+**Phase 2, Checkpoint 2 complete: taxonomy, territories and rep profiles.**
 
 Built and verified against a real PostgreSQL 16 database:
 
 - Next.js 16 · TypeScript · Tailwind 4 · Drizzle · Supabase Auth
-- 7 tables, 5 migrations, Row Level Security forced and deny-by-default on all
+- **19 tables, 9 migrations**, Row Level Security forced and deny-by-default on all
 - Organisations, members, platform and organisation roles
-- 32 unit/integration tests (the authorization matrix) + 8 E2E, all passing
-- CI: typecheck → lint → test → security verify → build → E2E
+- Shared taxonomy: 142 industries, 68 product categories, 211 territories
+  (US + Canada), 23 flat vocabulary entries — hierarchical, bidirectional matching
+- Rep profiles with a three-level visibility control and a public `/r/<slug>` page
+- **107 unit/integration tests + 20 E2E**, all passing
+- CI: typecheck → lint → test → security verify → seed drift → build → E2E
 
-Next: connect your Supabase project — see
-[`docs/08-phase-0-setup.md`](docs/08-phase-0-setup.md) §3. No credentials are ever
-shared in chat; they go into GitHub encrypted secrets.
+Migrations reach Supabase through a workflow that reads credentials from GitHub
+encrypted secrets — nothing sensitive is ever pasted into a chat or a commit.
+See [`docs/08-phase-0-setup.md`](docs/08-phase-0-setup.md) §3.
 
 ## Quick start
 

@@ -13,7 +13,7 @@ import {
 } from '@/lib/auth/actor';
 import { db } from '@/lib/db/client';
 import { withActor } from '@/lib/db/rls';
-import { organizationMembers, users, type User } from '@/lib/db/schema';
+import { organizationMembers, repProfiles, users, type User } from '@/lib/db/schema';
 import { canChangePlatformRole, canEditUser } from '@/lib/permissions';
 import { conflict, err, forbidden, notFound, ok, type Result } from '@/lib/errors';
 
@@ -192,12 +192,21 @@ export async function buildActorForAuthUser(
     orgRole: m.orgRole,
   }));
 
+  const [profile] = await db
+    .select({ id: repProfiles.id })
+    .from(repProfiles)
+    .where(eq(repProfiles.userId, row.id))
+    .limit(1);
+
+  const repProfileId = profile?.id ?? null;
+
   if (row.platformRole === 'admin' || row.platformRole === 'superadmin') {
     const admin: AdminActor = {
       kind: 'admin',
       userId: row.id,
       platformRole: row.platformRole,
       memberships,
+      repProfileId,
     };
     return admin;
   }
@@ -207,6 +216,7 @@ export async function buildActorForAuthUser(
     userId: row.id,
     platformRole: 'member',
     memberships,
+    repProfileId,
   };
   return user;
 }

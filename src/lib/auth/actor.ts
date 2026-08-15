@@ -27,6 +27,8 @@ export interface UserActor {
   readonly userId: string;
   readonly platformRole: Extract<PlatformRole, 'member'>;
   readonly memberships: readonly ActorMembership[];
+  /** The user's rep profile, if they have created one. Null is normal. */
+  readonly repProfileId: string | null;
 }
 
 export interface AdminActor {
@@ -34,6 +36,7 @@ export interface AdminActor {
   readonly userId: string;
   readonly platformRole: Extract<PlatformRole, 'admin' | 'superadmin'>;
   readonly memberships: readonly ActorMembership[];
+  readonly repProfileId: string | null;
   /** Set when this session is impersonating another user. Always audited. */
   readonly impersonatedBy?: string;
 }
@@ -89,6 +92,11 @@ export function actorPlatformRole(actor: Actor): string {
     case 'anonymous':
       return 'anonymous';
   }
+}
+
+/** The caller's own rep profile id, or null for anyone without one. */
+export function actorRepProfileId(actor: Actor): string | null {
+  return isAuthenticated(actor) ? actor.repProfileId : null;
 }
 
 export function membershipIn(

@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 
 import type { Actor, AdminActor, UserActor } from '@/lib/auth/actor';
 import { db } from '@/lib/db/client';
-import { organizationMembers, organizations, users } from '@/lib/db/schema';
+import { organizationMembers, organizations, repProfiles, users } from '@/lib/db/schema';
 import type { OrgRole, PlatformRole } from '@/lib/db/schema';
 
 let counter = 0;
@@ -98,12 +98,21 @@ export async function actorFor(userId: string): Promise<Actor> {
     orgRole: m.orgRole,
   }));
 
+  const [profile] = await db
+    .select({ id: repProfiles.id })
+    .from(repProfiles)
+    .where(sql`${repProfiles.userId} = ${userId}`)
+    .limit(1);
+
+  const repProfileId = profile?.id ?? null;
+
   if (row.platformRole === 'admin' || row.platformRole === 'superadmin') {
     return {
       kind: 'admin',
       userId: row.id,
       platformRole: row.platformRole,
       memberships,
+      repProfileId,
     } satisfies AdminActor;
   }
 
@@ -112,6 +121,7 @@ export async function actorFor(userId: string): Promise<Actor> {
     userId: row.id,
     platformRole: 'member',
     memberships,
+    repProfileId,
   } satisfies UserActor;
 }
 
