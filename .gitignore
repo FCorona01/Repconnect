@@ -39,3 +39,6 @@ pnpm-debug.log*
 # misc
 *.tsbuildinfo
 .vercel
+
+# local object storage (development only)
+.storage/

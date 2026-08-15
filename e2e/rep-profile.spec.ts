@@ -50,6 +50,30 @@ test('a hidden profile is never indexed', async ({ request }) => {
   expect(html).not.toContain('Bob Private');
 });
 
+test('the avatar loads through the authorized route', async ({ page, request }) => {
+  await page.goto('/r/e2e-public-rep');
+
+  const avatar = page.locator('img[src*="/api/files/"]');
+  await expect(avatar).toBeVisible();
+
+  const src = await avatar.getAttribute('src');
+  expect(src).toBeTruthy();
+
+  // Served with the headers that stop an uploaded file executing in our origin
+  // or being cached by a shared cache.
+  const response = await request.get(src!);
+  expect(response.status()).toBe(200);
+  expect(response.headers()['content-type']).toBe('image/webp');
+  expect(response.headers()['content-disposition']).toContain('attachment');
+  expect(response.headers()['cache-control']).toContain('no-store');
+  expect(response.headers()['x-content-type-options']).toBe('nosniff');
+});
+
+test('a file cannot be fetched by guessing an id', async ({ request }) => {
+  const response = await request.get('/api/files/01890000-0000-7000-8000-000000000000');
+  expect(response.status()).toBe(404);
+});
+
 test('an unknown slug returns the same not-found page', async ({ page }) => {
   const response = await page.goto('/r/no-such-rep-at-all');
   expect(response?.status()).toBe(404);

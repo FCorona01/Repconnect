@@ -98,6 +98,70 @@ const checks: Check[] = [
     },
   },
   {
+    // The single most damaging misconfiguration available in this system: a
+    // public bucket is a permanent, unauthenticated URL to every object in it,
+    // and for `verification` that means government ID. Checked on the live
+    // database because a dashboard toggle can undo what a migration set.
+    name: 'no storage bucket is public',
+    run: async (sql) => {
+      const hasStorage = await sql<{ n: number }[]>`
+        select count(*)::int as n from pg_namespace where nspname = 'storage'
+      `;
+      if ((hasStorage[0]?.n ?? 0) === 0) {
+        return { pass: true, detail: 'no storage schema (local PostgreSQL) — skipped' };
+      }
+
+      const rows = await sql<{ id: string; public: boolean }[]>`
+        select id, public from storage.buckets
+        where id in ('avatars', 'logos', 'documents', 'verification')
+      `;
+
+      if (rows.length === 0) {
+        return { pass: false, detail: 'expected buckets are MISSING — run migration 0010' };
+      }
+
+      const exposed = rows.filter((r) => r.public).map((r) => r.id);
+      return {
+        pass: exposed.length === 0 && rows.length === 4,
+        detail:
+          exposed.length > 0
+            ? `PUBLIC buckets: ${exposed.join(', ')} — every object in them is world-readable`
+            : `${rows.length}/4 buckets present, all private`,
+      };
+    },
+  },
+  {
+    name: 'storage.objects has no permissive policy on our buckets',
+    run: async (sql) => {
+      const hasStorage = await sql<{ n: number }[]>`
+        select count(*)::int as n from pg_namespace where nspname = 'storage'
+      `;
+      if ((hasStorage[0]?.n ?? 0) === 0) {
+        return { pass: true, detail: 'no storage schema (local PostgreSQL) — skipped' };
+      }
+
+      // Only the service role should reach these objects, and it bypasses RLS.
+      // Any policy naming our buckets would open a second path that skips every
+      // application-level authorization check.
+      const rows = await sql<{ polname: string }[]>`
+        select p.polname
+        from pg_policy p
+        join pg_class c on c.oid = p.polrelid
+        join pg_namespace n on n.oid = c.relnamespace
+        where n.nspname = 'storage' and c.relname = 'objects'
+          and pg_get_expr(p.polqual, p.polrelid) ~ '(avatars|logos|documents|verification)'
+      `;
+
+      return {
+        pass: rows.length === 0,
+        detail:
+          rows.length === 0
+            ? 'no policies reference our buckets (deny-by-default)'
+            : `unexpected policies: ${rows.map((r) => r.polname).join(', ')}`,
+      };
+    },
+  },
+  {
     name: 'the request-context functions exist',
     run: async (sql) => {
       const rows = await sql<{ proname: string }[]>`

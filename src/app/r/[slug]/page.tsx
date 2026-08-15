@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 
 import { getActor } from '@/lib/auth/session';
 import { SENIORITY_LABELS, type RepSeniority } from '@/lib/db/schema';
+import { getFileUrl } from '@/lib/repositories/files';
 import { getRepProfileBySlug, type RepProfilePublicView } from '@/lib/repositories/rep-profiles';
 
 import { AttributeList, ProfileSection, TerritoryList } from './sections';
@@ -103,6 +104,13 @@ export default async function RepProfilePage({
   const experience = experienceSummary(profile);
   const isVerified = profile.verificationStatus === 'verified';
 
+  // Issued per request, after an authorization check on the files row, and
+  // never cached — a cached authorization-dependent URL is a public URL.
+  const avatar = profile.avatarFileId
+    ? await getFileUrl(await getActor(), profile.avatarFileId)
+    : null;
+  const avatarUrl = avatar?.ok ? avatar.data.url : null;
+
   const hasAnyExpertise =
     profile.industries.length > 0 ||
     profile.productCategories.length > 0 ||
@@ -115,14 +123,28 @@ export default async function RepProfilePage({
       <article>
         {/* --- Identity -------------------------------------------------- */}
         <header className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-7">
-          <div
-            aria-hidden="true"
-            className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-brand-600)] text-2xl font-semibold text-white sm:size-24 sm:text-3xl"
-          >
-            {/* Avatar uploads arrive in Checkpoint 3; initials are the honest
-                interim state rather than a broken image placeholder. */}
-            {initialsOf(profile.fullName)}
-          </div>
+          {avatarUrl ? (
+            // Dimensions come from the files row, recorded at upload time, so
+            // the space is reserved before the image loads and the page does
+            // not jump. eslint's next/image rule is waived deliberately: the
+            // URL is short-lived and authorization-dependent, which the image
+            // optimiser would cache and thereby defeat.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={avatarUrl}
+              alt=""
+              width={96}
+              height={96}
+              className="size-20 shrink-0 rounded-2xl object-cover sm:size-24"
+            />
+          ) : (
+            <div
+              aria-hidden="true"
+              className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-brand-600)] text-2xl font-semibold text-white sm:size-24 sm:text-3xl"
+            >
+              {initialsOf(profile.fullName)}
+            </div>
+          )}
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">

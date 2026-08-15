@@ -3,6 +3,7 @@ import {
   bigint,
   boolean,
   index,
+  integer,
   inet,
   jsonb,
   pgTable,
@@ -132,6 +133,9 @@ export const files = pgTable(
     sizeBytes: bigint('size_bytes', { mode: 'number' }).notNull(),
     checksumSha256: text('checksum_sha256'),
     scanStatus: fileScanStatusEnum('scan_status').notNull().default('pending'),
+    /** Recorded at upload so pages can reserve space and avoid layout shift. */
+    imageWidth: integer('image_width'),
+    imageHeight: integer('image_height'),
     createdAt: createdAt(),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
   },

@@ -619,8 +619,17 @@ async function replaceAttributes(
   return ok(null);
 }
 
-/** Recomputes and stores completeness from the profile's current state. */
-async function refreshCompleteness(tx: Tx, repProfileId: string): Promise<number> {
+/**
+ * Recomputes and stores completeness from the profile's current state.
+ *
+ * Exported so any path that changes a contributing field (setting an avatar,
+ * for instance) recomputes rather than adjusting the stored number by a delta.
+ * Deltas drift the moment two paths touch the same profile.
+ */
+export async function refreshRepProfileCompleteness(
+  tx: Tx,
+  repProfileId: string,
+): Promise<number> {
   const [row] = await tx
     .select()
     .from(repProfiles)
@@ -740,7 +749,7 @@ export async function createRepProfile(
     const attributes = await replaceAttributes(tx, created.id, parsed.data);
     if (!attributes.ok) return err(attributes.error);
 
-    const completeness = await refreshCompleteness(tx, created.id);
+    const completeness = await refreshRepProfileCompleteness(tx, created.id);
 
     await recordAudit(tx, actor, {
       action: 'rep_profile.created',
@@ -805,7 +814,7 @@ export async function updateRepProfile(
     const attributes = await replaceAttributes(tx, updated.id, parsed.data);
     if (!attributes.ok) return err(attributes.error);
 
-    const completeness = await refreshCompleteness(tx, updated.id);
+    const completeness = await refreshRepProfileCompleteness(tx, updated.id);
 
     await recordAudit(tx, actor, {
       action: 'rep_profile.updated',
