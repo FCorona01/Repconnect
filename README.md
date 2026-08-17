@@ -5,7 +5,7 @@ fractional sales professionals, contract salespeople, and commission-based sales
 
 ## Current status
 
-**Phase 2, Checkpoint 4 complete: taxonomy, rep profiles, file pipeline, company profiles.**
+**Phase 2 complete: taxonomy, profiles, file pipeline, and the interface layer.**
 
 Built and verified against a real PostgreSQL 16 database:
 
@@ -17,7 +17,8 @@ Built and verified against a real PostgreSQL 16 database:
 - Rep profiles with a three-level visibility control and a public `/r/<slug>` page
 - Company profiles with a public `/c/<slug>` page and team management
 - Secure upload pipeline: magic-byte validation, EXIF stripping, private buckets
-- **169 unit/integration tests + 36 E2E**, all passing
+- Profile wizard, taxonomy picker, company editor, admin taxonomy console
+- **187 unit/integration tests + 54 E2E**, all passing
 - CI: typecheck → lint → test → security verify → seed drift → build → E2E
 
 Migrations reach Supabase through a workflow that reads credentials from GitHub

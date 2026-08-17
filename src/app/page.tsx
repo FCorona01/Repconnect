@@ -1,11 +1,14 @@
+import Link from 'next/link';
+
 import { getActor } from '@/lib/auth/session';
 import { isSupabaseConfigured } from '@/lib/env';
 
 /**
- * Phase 0 status page.
+ * Build status page.
  *
- * Deliberately not a marketing landing page: there is no product behind it yet,
- * and a page that implies otherwise would be exactly the kind of demo this
+ * Deliberately not a marketing landing page: the marketplace has no
+ * opportunities in it yet, and a page implying otherwise would be exactly the
+ * kind of demo this
  * project set out not to build. It reports what is actually wired up.
  */
 export default async function HomePage() {
@@ -19,14 +22,18 @@ export default async function HomePage() {
     { name: 'Organisations, members, roles', done: true },
     { name: 'Authorization test matrix', done: true },
     { name: 'Supabase Auth connected', done: supabaseReady },
-    { name: 'Taxonomy and profiles (Phase 2)', done: false },
+    { name: 'Shared taxonomy and territories', done: true },
+    { name: 'Rep profiles and public pages', done: true },
+    { name: 'Company profiles and team management', done: true },
+    { name: 'Secure file uploads', done: true },
+    { name: 'Profile editors and admin console', done: true },
     { name: 'Opportunities (Phase 3)', done: false },
   ];
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col justify-center px-6 py-16">
       <p className="text-sm font-medium tracking-wide text-[var(--muted)] uppercase">
-        Phase 0 · Foundations
+        Phase 2 · Profiles and taxonomy
       </p>
       <h1 className="mt-3 text-4xl font-semibold tracking-tight">RepConnect</h1>
       <p className="mt-4 text-lg text-[var(--muted)]">
@@ -62,11 +69,31 @@ export default async function HomePage() {
         </div>
       )}
 
-      {actor.kind !== 'anonymous' && (
-        <p className="mt-8 text-sm text-[var(--muted)]">
-          Signed in. Session resolved as <code>{actor.kind}</code>.
-        </p>
-      )}
+      <div className="mt-8 flex flex-wrap gap-3">
+        {actor.kind === 'anonymous' ? (
+          <>
+            <Link
+              href="/sign-up"
+              className="rounded-lg bg-[var(--color-brand-600)] px-4 py-2.5 text-sm font-medium text-white"
+            >
+              Create an account
+            </Link>
+            <Link
+              href="/sign-in"
+              className="rounded-lg border border-[var(--border)] px-4 py-2.5 text-sm font-medium"
+            >
+              Sign in
+            </Link>
+          </>
+        ) : (
+          <Link
+            href="/dashboard"
+            className="rounded-lg bg-[var(--color-brand-600)] px-4 py-2.5 text-sm font-medium text-white"
+          >
+            Go to your dashboard
+          </Link>
+        )}
+      </div>
     </main>
   );
 }

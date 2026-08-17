@@ -469,3 +469,33 @@ export async function setTaxonomyEntryActive(
     return ok(updated);
   });
 }
+
+/**
+ * Row counts per vocabulary. Admin-only: it is operational information, not
+ * something a member needs.
+ */
+export async function countTaxonomyEntries(
+  actor: Actor,
+): Promise<Result<Record<string, number>>> {
+  if (!isAdmin(actor)) return err(forbidden());
+
+  const rows = await withActor(actor, async (tx) =>
+    tx.execute<{ name: string; total: number; active: number }>(sql`
+      select 'industries' as name, count(*)::int as total,
+             count(*) filter (where is_active)::int as active from industries
+      union all select 'product categories', count(*)::int,
+             count(*) filter (where is_active)::int from product_categories
+      union all select 'territories', count(*)::int,
+             count(*) filter (where is_active)::int from territories
+      union all select 'customer types', count(*)::int,
+             count(*) filter (where is_active)::int from customer_types
+      union all select 'sales models', count(*)::int,
+             count(*) filter (where is_active)::int from sales_models
+      union all select 'compensation types', count(*)::int,
+             count(*) filter (where is_active)::int from compensation_types
+    `),
+  );
+
+  const list = rows as unknown as Array<{ name: string; total: number; active: number }>;
+  return ok(Object.fromEntries(list.map((r) => [r.name, r.total])));
+}

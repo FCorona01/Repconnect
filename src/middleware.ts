@@ -10,7 +10,12 @@ import { NextResponse, type NextRequest } from 'next/server';
  * must never be the only thing standing between a user and a record.
  */
 
-const PROTECTED_PREFIXES = ['/dashboard', '/settings', '/organizations'] as const;
+const PROTECTED_PREFIXES = [
+  '/dashboard',
+  '/profile',
+  '/settings',
+  '/organizations',
+] as const;
 const ADMIN_PREFIX = '/admin';
 
 export async function middleware(request: NextRequest) {

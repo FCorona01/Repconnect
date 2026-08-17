@@ -25,6 +25,9 @@ export default async function globalSetup(): Promise<void> {
   const sql = postgres(url, { max: 1, onnotice: () => {} });
 
   try {
+    // Order matters: organizations.created_by references users, so the
+    // organisation goes first or the user delete violates the foreign key.
+    await sql`delete from organizations where slug = 'e2e-northwind'`;
     await sql`delete from rep_profiles where slug in ('e2e-public-rep', 'e2e-private-rep')`;
     await sql`delete from users where email in ('e2e-public@example.test', 'e2e-private@example.test')`;
 
@@ -136,8 +139,6 @@ async function seedAvatar(
  * /c/[slug] page.
  */
 async function seedOrganization(sql: postgres.Sql, ownerUserId: string): Promise<void> {
-  await sql`delete from organizations where slug = 'e2e-northwind'`;
-
   const [org] = await sql<{ id: string }[]>`
     insert into organizations
       (slug, legal_name, display_name, tagline, description, size_band,
