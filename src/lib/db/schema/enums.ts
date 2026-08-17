@@ -64,6 +64,14 @@ export const consentPolicyTypeEnum = pgEnum('consent_policy_type', [
   'marketing',
 ]);
 
+export const orgSizeBandEnum = pgEnum('org_size_band', [
+  '1-10',
+  '11-50',
+  '51-200',
+  '201-1000',
+  '1000+',
+]);
+
 export const territoryKindEnum = pgEnum('territory_kind', [
   'global',
   'country',
@@ -79,6 +87,7 @@ export type OrgStatus = (typeof orgStatusEnum.enumValues)[number];
 export type FileBucket = (typeof fileBucketEnum.enumValues)[number];
 export type FileVisibility = (typeof fileVisibilityEnum.enumValues)[number];
 export type TerritoryKind = (typeof territoryKindEnum.enumValues)[number];
+export type OrgSizeBand = (typeof orgSizeBandEnum.enumValues)[number];
 
 /**
  * Ranking used for "admin or above" style checks.

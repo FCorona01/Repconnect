@@ -83,6 +83,7 @@ export default async function globalSetup(): Promise<void> {
     `;
 
     await seedAvatar(sql, publicProfile.id, publicUser.id);
+    await seedOrganization(sql, publicUser.id);
   } finally {
     await sql.end();
   }
@@ -128,4 +129,43 @@ async function seedAvatar(
   if (file) {
     await sql`update rep_profiles set avatar_file_id = ${file.id} where id = ${repProfileId}`;
   }
+}
+
+/**
+ * A company profile with attributes and a headquarters, for the public
+ * /c/[slug] page.
+ */
+async function seedOrganization(sql: postgres.Sql, ownerUserId: string): Promise<void> {
+  await sql`delete from organizations where slug = 'e2e-northwind'`;
+
+  const [org] = await sql<{ id: string }[]>`
+    insert into organizations
+      (slug, legal_name, display_name, tagline, description, size_band,
+       founded_year, hq_territory_id, status, verification_status, created_by)
+    values
+      ('e2e-northwind', 'Northwind Devices LLC', 'Northwind Devices',
+       'Surgical implants for outpatient centres',
+       'We build implants used in ambulatory surgery centres across the Southwest.',
+       '51-200', 2014,
+       (select id from territories where slug = 'los-angeles-metro'),
+       'active', 'verified', ${ownerUserId})
+    returning id
+  `;
+
+  if (!org) throw new Error('Failed to seed E2E organisation');
+
+  await sql`
+    insert into organization_members (organization_id, user_id, org_role, accepted_at)
+    values (${org.id}, ${ownerUserId}, 'owner', now())
+  `;
+
+  await sql`
+    insert into org_industries (organization_id, industry_id)
+    select ${org.id}, id from industries where slug = 'medical-devices'
+  `;
+
+  await sql`
+    insert into org_product_categories (organization_id, product_category_id)
+    select ${org.id}, id from product_categories where slug = 'medical-capital-equipment'
+  `;
 }

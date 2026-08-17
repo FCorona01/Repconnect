@@ -19,6 +19,7 @@ import {
   fileScanStatusEnum,
   fileVisibilityEnum,
   orgRoleEnum,
+  orgSizeBandEnum,
   orgStatusEnum,
   platformRoleEnum,
   userStatusEnum,
@@ -73,6 +74,11 @@ export const organizations = pgTable(
     displayName: text('display_name').notNull(),
     website: text('website'),
     description: text('description'),
+    tagline: text('tagline'),
+    sizeBand: orgSizeBandEnum('size_band'),
+    foundedYear: integer('founded_year'),
+    hqTerritoryId: uuid('hq_territory_id'),
+    logoFileId: uuid('logo_file_id'),
     status: orgStatusEnum('status').notNull().default('active'),
     verificationStatus: verificationStatusEnum('verification_status')
       .notNull()

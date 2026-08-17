@@ -5,17 +5,19 @@ fractional sales professionals, contract salespeople, and commission-based sales
 
 ## Current status
 
-**Phase 2, Checkpoint 2 complete: taxonomy, territories and rep profiles.**
+**Phase 2, Checkpoint 4 complete: taxonomy, rep profiles, file pipeline, company profiles.**
 
 Built and verified against a real PostgreSQL 16 database:
 
 - Next.js 16 · TypeScript · Tailwind 4 · Drizzle · Supabase Auth
-- **19 tables, 9 migrations**, Row Level Security forced and deny-by-default on all
+- **21 tables, 11 migrations**, Row Level Security forced and deny-by-default on all
 - Organisations, members, platform and organisation roles
 - Shared taxonomy: 142 industries, 68 product categories, 211 territories
   (US + Canada), 23 flat vocabulary entries — hierarchical, bidirectional matching
 - Rep profiles with a three-level visibility control and a public `/r/<slug>` page
-- **107 unit/integration tests + 20 E2E**, all passing
+- Company profiles with a public `/c/<slug>` page and team management
+- Secure upload pipeline: magic-byte validation, EXIF stripping, private buckets
+- **169 unit/integration tests + 36 E2E**, all passing
 - CI: typecheck → lint → test → security verify → seed drift → build → E2E
 
 Migrations reach Supabase through a workflow that reads credentials from GitHub
