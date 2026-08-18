@@ -19,6 +19,7 @@ import {
   fileScanStatusEnum,
   fileVisibilityEnum,
   orgRoleEnum,
+  listingTrustEnum,
   orgSizeBandEnum,
   orgStatusEnum,
   platformRoleEnum,
@@ -83,6 +84,8 @@ export const organizations = pgTable(
     verificationStatus: verificationStatusEnum('verification_status')
       .notNull()
       .default('unverified'),
+    /** Drives the first-listing review rule. See migration 0012. */
+    listingTrust: listingTrustEnum('listing_trust').notNull().default('unreviewed'),
     createdBy: uuid('created_by').references(() => users.id),
     createdAt: createdAt(),
     updatedAt: updatedAt(),

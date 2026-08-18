@@ -72,6 +72,48 @@ export const orgSizeBandEnum = pgEnum('org_size_band', [
   '1000+',
 ]);
 
+export const listingTrustEnum = pgEnum('listing_trust', [
+  'unreviewed',
+  'trusted',
+  'restricted',
+]);
+
+export const opportunityStatusEnum = pgEnum('opportunity_status', [
+  'draft',
+  'pending_review',
+  'open',
+  'paused',
+  'filled',
+  'closed',
+  'archived',
+]);
+
+export const engagementTypeEnum = pgEnum('engagement_type', [
+  'full_time',
+  'part_time',
+  'fractional',
+  'project',
+]);
+
+export const commissionBasisEnum = pgEnum('commission_basis', [
+  'revenue',
+  'gross_profit',
+  'units',
+  'contract_value',
+]);
+
+export const paymentFrequencyEnum = pgEnum('payment_frequency', [
+  'monthly',
+  'quarterly',
+  'on_collection',
+  'on_close',
+]);
+
+export const opportunitySourceEnum = pgEnum('opportunity_source', [
+  'organic',
+  'founder_sourced',
+]);
+
 export const territoryKindEnum = pgEnum('territory_kind', [
   'global',
   'country',
@@ -88,6 +130,12 @@ export type FileBucket = (typeof fileBucketEnum.enumValues)[number];
 export type FileVisibility = (typeof fileVisibilityEnum.enumValues)[number];
 export type TerritoryKind = (typeof territoryKindEnum.enumValues)[number];
 export type OrgSizeBand = (typeof orgSizeBandEnum.enumValues)[number];
+export type ListingTrust = (typeof listingTrustEnum.enumValues)[number];
+export type OpportunityStatus = (typeof opportunityStatusEnum.enumValues)[number];
+export type EngagementType = (typeof engagementTypeEnum.enumValues)[number];
+export type CommissionBasis = (typeof commissionBasisEnum.enumValues)[number];
+export type PaymentFrequency = (typeof paymentFrequencyEnum.enumValues)[number];
+export type OpportunitySource = (typeof opportunitySourceEnum.enumValues)[number];
 
 /**
  * Ranking used for "admin or above" style checks.
